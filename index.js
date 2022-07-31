@@ -101,7 +101,10 @@ function spawnProcessForAuthPortalServer(serverFilePath) {
 function spawnProcessForPythonServer(serverFilePath, portNumber) {
     const pythonServer = spawn(`cd ${serverFilePath} && pwd && source activate BEIS-V050 && nodemon node.py -p=${portNumber}`, {shell: true});
     // NOTE: actually nodemon is a delicously generic tool and knows that .py files should be executed with python for example; thus it will automatically restart 'python node.py -p=whateverport' on file changes: https://stackoverflow.com/questions/49355010/how-do-i-watch-python-source-code-files-and-restart-when-i-save
-
+    // Thus whenever needing to install new python package, we need to install it under the BEIS-V050 virtual environment
+    // a) start new terminal and cd /Users/yifan/Desktop/Python_Projects/LIZ_Project/core-python-finished
+    // b) source activate BEIS-V050
+    // c) e.g. python -m pip install pymongo[srv]   and   python -m pip install python-dotenv 
     pythonServer.stdout.on("data", data => {
         console.log(`[pythonServer on port=${portNumber} stdout]: ${data}`);
     });
