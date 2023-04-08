@@ -58,8 +58,9 @@ function spawnProcessForCommandLs() {
 }
 
 function spawnProcessForCommandMongod() {
-    // const mongod = spawn("mongod", ["--dbpath=/Users/yifan/data/db/"]);
-    const mongod = spawn('mongod --dbpath=/Users/yifan/data/db/', {shell: true});
+    // const mongod = spawn('mongod --dbpath=/Users/yifan/data/db/', {shell: true});
+    // Now use brew to manage mongodb instance
+    const mongod = spawn('brew services start mongodb-community@6.0', {shell: true});
 
     mongod.stdout.on("data", data => {
         console.log(`[mongod stdout]: ${data}`);
@@ -98,13 +99,13 @@ function spawnProcessForAuthPortalServer(serverFilePath) {
     });
 }
 
-function spawnProcessForPythonServer(serverFilePath, portNumber) {
-    const pythonServer = spawn(`cd ${serverFilePath} && pwd && source activate BEIS-V050 && nodemon node.py -p=${portNumber}`, {shell: true});
+function spawnProcessForPythonServer(serverFilePath, virtualEnv, portNumber) {
+    const pythonServer = spawn(`cd ${serverFilePath} && pwd && source activate ${virtualEnv} && nodemon node.py -p=${portNumber}`, {shell: true});
     // NOTE: actually nodemon is a delicously generic tool and knows that .py files should be executed with python for example; thus it will automatically restart 'python node.py -p=whateverport' on file changes: https://stackoverflow.com/questions/49355010/how-do-i-watch-python-source-code-files-and-restart-when-i-save
     // Thus whenever needing to install new python package, we need to install it under the BEIS-V050 virtual environment
     // a) start new terminal and cd /Users/yifan/Desktop/Python_Projects/LIZ_Project/core-python-finished
     // b) source activate BEIS-V050
-    // c) e.g. python -m pip install pymongo[srv]   and   python -m pip install python-dotenv 
+    // c) e.g. python3 -m pip install pymongo[srv]   and   python3 -m pip install python-dotenv
     pythonServer.stdout.on("data", data => {
         console.log(`[pythonServer on port=${portNumber} stdout]: ${data}`);
     });
@@ -142,27 +143,27 @@ function spawnProcessForAuthPortalClient(clientFilePath) {
     });
 }
 
-const timeInterval = 4000;
-const smallerTimeInterval = 1000;
+const timeInterval = 8000;
+const smallerTimeInterval = 2000;
 
 spawnProcessForCommandMongod();
 
 setTimeout(() => {
     console.log('AuthPortalServer called...');
-    spawnProcessForAuthPortalServer('/Users/yifan/Desktop/Python_Projects/LIZ_Project/AuthPortal/server');
+    spawnProcessForAuthPortalServer('/Users/yifanli/Desktop/Web/AuthPortal_blockchain/server');
 }, timeInterval);
 
 setTimeout(() => {
     console.log('pythonServer 1 called...');
-    spawnProcessForPythonServer('/Users/yifan/Desktop/Python_Projects/LIZ_Project/core-python-finished', '5000');
+    spawnProcessForPythonServer('/Users/yifanli/Desktop/Web/blockchain_digital_currency_app', 'NewTestVirtualEnvOnMacpro', '5100');
 }, timeInterval + smallerTimeInterval);
 
 setTimeout(() => {
     console.log('pythonServer 2 called...');
-    spawnProcessForPythonServer('/Users/yifan/Desktop/Python_Projects/LIZ_Project/core-python-finished', '5001');
+    spawnProcessForPythonServer('/Users/yifanli/Desktop/Web/blockchain_digital_currency_app', 'NewTestVirtualEnvOnMacpro', '5101');
 }, timeInterval + smallerTimeInterval);
 
 setTimeout(() => {
     console.log('AuthPortalClient called...');
-    spawnProcessForAuthPortalClient('/Users/yifan/Desktop/Python_Projects/LIZ_Project/AuthPortal/client');
+    spawnProcessForAuthPortalClient('/Users/yifanli/Desktop/Web/AuthPortal_blockchain/client');
 }, timeInterval * 2);
