@@ -124,7 +124,7 @@ function spawnProcessForPythonServer(serverFilePath, virtualEnv, portNumber) {
 }
 
 function spawnProcessForAuthPortalClient(clientFilePath) {
-    const reactClient = spawn(`cd ${clientFilePath} && pwd && npm start`, {shell: true});
+    const reactClient = spawn(`cd ${clientFilePath} && pwd && sudo npm start`, {shell: true});
 
     reactClient.stdout.on("data", data => {
         console.log(`[reactClient stdout]: ${data}`);
